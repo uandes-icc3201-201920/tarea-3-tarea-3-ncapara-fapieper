@@ -1,5 +1,8 @@
 import socket
 import threading
+import random
+
+dbLOCK = threading.Lock()
 
 class server(object):
 	def __init__(self,host,port):
@@ -7,6 +10,8 @@ class server(object):
 		self.port = port
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.bind((self.host,self.port))
+		self.the_db = {}
+		self.rand_key = random.randint(1000,10000)
 	def listen(self):
 		print("socket binded to port", self.port)
 		print("host",socket.gethostbyname(self.host))
@@ -20,15 +25,29 @@ class server(object):
 		print('Connected to :', address)
 		while True:
 			try:
-				data = client.recv(size)
+				data = client.recv(size)#datas como bytes  b'algo'
 				if data:
 					response = data
-					client.send(response)
+					#client.send(response)
+					
+					comando = response.split()
+					if comando[0] == b'input':
+						self.update_db_with_kv(comando,client,address)
+					print(self.the_db)
 				else:
 					raise error('Client disconnected')
 			except:
 				client.close()
 				return False
+	def update_db_with_kv(self,comando,client,address):
+		search_key = comando[1] in self.the_db
+		if search_key == False:
+			self.the_db[comando[1]] = comando[2]
+			info = "Key and value added"
+			client.send(info.encode('utf8'))
+		else:
+			info = "Key already exists"
+			client.send(info.encode('utf8'))
 if __name__ == "__main__":
 	while True:
 		port_num = input("port?")
