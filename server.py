@@ -33,21 +33,34 @@ class server(object):
 					comando = response.split()
 					if comando[0] == b'input':
 						self.update_db_with_kv(comando,client,address)
+					elif comando[0] == b'inputv':
+						self.update_db_with_random_kv(comando,client,address)
 					print(self.the_db)
 				else:
 					raise error('Client disconnected')
 			except:
 				client.close()
 				return False
-	def update_db_with_kv(self,comando,client,address):
+	def update_db_with_kv(self,comando,client,address):#para cuando nos dan key y values
 		search_key = comando[1] in self.the_db
 		if search_key == False:
+			dbLOCK.acquire()
 			self.the_db[comando[1]] = comando[2]
+			dbLOCK.release()
 			info = "Key and value added"
 			client.send(info.encode('utf8'))
 		else:
 			info = "Key already exists"
 			client.send(info.encode('utf8'))
+	def update_db_with_random_kv(self,comando,client,address):#con keys al azar
+		temporal = str(self.rand_key)
+		tem_bytes = temporal.encode('utf-8')
+		dbLOCK.acquire()
+		self.the_db[tem_bytes] = comando[1]
+		dbLOCK.release()
+		info = "value added"
+		client.send(info.encode('utf-8'))
+		self.rand_key += 1
 if __name__ == "__main__":
 	while True:
 		port_num = input("port?")

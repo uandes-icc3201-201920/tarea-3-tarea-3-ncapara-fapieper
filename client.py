@@ -47,7 +47,18 @@ class client(object):
 					data = self.sock.recv(1024)
 					print(str(data.decode('utf8')))
 			elif cmd == "input v":
-				print("dosomethin")
+				if probar == True:
+					while True:
+						try:
+							values = str(input("Ingrese valor como\n Valor\n"))
+							break
+						except:
+							print("incorrect value")
+							continue
+					mensaje ="inputv "+values
+					self.sock.send(mensaje.encode('utf8'))
+					data = self.sock.recv(1024)
+					print(str(data.decode('utf8')))
 	def intentar_conexion(self):#maneja la conexion si se ingresa comando connect
 		try:
 			self.sock.connect((self.host,self.port))
