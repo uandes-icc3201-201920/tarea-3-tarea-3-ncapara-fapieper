@@ -37,12 +37,21 @@ class server(object):
 						self.update_db_with_random_kv(comando,client,address)
 					elif comando[0] == b'get':
 						self.fetch_key_value(comando,client,address)
+					elif comando[0] == b'update':
+						self.update_key_value(comando,client,address)
+					elif comando[0] == b'disconnect':
+						self.try_diconnect(comando,client,address)
+					elif comando[0] == b'delete':
+						self.delete_key(comando,client,address)
 					print(self.the_db)
 				else:
 					raise error('Client disconnected')
 			except:
 				client.close()
 				return False
+	def try_diconnect(self,comandos,client,address):
+		client.close()
+		return False
 	def update_db_with_kv(self,comando,client,address):#para cuando nos dan key y values
 		search_key = comando[1] in self.the_db
 		if search_key == False:
@@ -71,6 +80,28 @@ class server(object):
 			client.send(get)
 		else:
 			info = "not found"
+			client.send(info.encode('utf-8'))
+	def update_key_value(self,comando,client,address):
+		search_key = comando[1] in self.the_db
+		if search_key == True:
+			dbLOCK.acquire()
+			self.the_db[comando[1]] = comando[2]
+			dbLOCK.release()
+			info = "new value updated"
+			client.send(info.encode('utf-8'))
+		else:
+			info = "Key not found"
+			client.send(info.encode('utf-8'))
+	def delete_key(self,comando,client,address):
+		search_key = comando[1] in self.the_db
+		if search_key == True:
+			dbLOCK.acquire()
+			self.the_db.pop(comando[1])
+			dbLOCK.release()
+			info = "key deleted"
+			client.send(info.encode('utf-8'))
+		else:
+			info = "key not found, can't delete"
 			client.send(info.encode('utf-8'))
 if __name__ == "__main__":
 	while True:

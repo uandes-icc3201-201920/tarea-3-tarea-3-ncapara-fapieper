@@ -20,6 +20,8 @@ class client(object):
 					print("No se logro conectar")
 			elif cmd == "disconnect":
 				if probar == True:
+					mensaje = "disconnect"
+					self.sock.send(mensaje.encode('utf8'))
 					self.sock.close()
 					probar = False
 					print("Desconectado")
@@ -78,6 +80,39 @@ class client(object):
 					print("("+values+","+str(data.decode('utf8'))+")")
 				else:
 					print("Not connected")
+			elif cmd == "update":
+				if probar == True:
+					while True:
+						try:
+							key_new_value = input("Ingrese key y nuevo valor como\n Key Value\n").split()
+							if len(values) == 2:
+								break
+							if key_new_value[0] == " " or key_new_value[1] == " ":
+								continue
+						except:
+							print("incorrect key value")
+							continue
+					mensaje ="update "+key_new_value[0]+" "+key_new_value[1]
+					self.sock.send(mensaje.encode('utf8'))
+					data = self.sock.recv(1024)
+					print(str(data.decode('utf8')))
+				else:
+					print("not connected")
+			elif cmd == "delete":
+				if probar == True:
+					while True:
+						try:
+							key = str(input("Ingrese key  como\n Key \n"))
+							break
+						except:
+							print("incorrect key value")
+							continue
+					mensaje ="delete "+key
+					self.sock.send(mensaje.encode('utf8'))
+					data = self.sock.recv(1024)
+					print(str(data.decode('utf8')))
+				else:
+					print("not connected")
 	def intentar_conexion(self):#maneja la conexion si se ingresa comando connect
 		try:
 			self.sock.connect((self.host,self.port))
