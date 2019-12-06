@@ -35,6 +35,8 @@ class server(object):
 						self.update_db_with_kv(comando,client,address)
 					elif comando[0] == b'inputv':
 						self.update_db_with_random_kv(comando,client,address)
+					elif comando[0] == b'get':
+						self.fetch_key_value(comando,client,address)
 					print(self.the_db)
 				else:
 					raise error('Client disconnected')
@@ -61,6 +63,15 @@ class server(object):
 		info = "value added"
 		client.send(info.encode('utf-8'))
 		self.rand_key += 1
+	def fetch_key_value(self,comando,client,address):#funcion para obtener el value
+		search_key = comando[1] in self.the_db
+		print(search_key)
+		if search_key == True:
+			get = self.the_db[comando[1]]
+			client.send(get)
+		else:
+			info = "not found"
+			client.send(info.encode('utf-8'))
 if __name__ == "__main__":
 	while True:
 		port_num = input("port?")
@@ -69,7 +80,12 @@ if __name__ == "__main__":
 			break
 		except ValueError:
 			pass
-	#try:
+	#getting host ip, name
+	try:
+		host_name = socket.gethostname()
+		host_ip = socket.gethostbyname(host_name)
+		print("Hostname: ",host_name)
+		print("IP: ",host_ip)
+	except:
+		print("unable to get hsot ip, name")
 	server('',port_num).listen()
-	#except:
-		#print("Permiso denegado\nPuerto no permitido\n")

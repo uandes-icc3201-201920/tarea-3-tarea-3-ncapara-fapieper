@@ -46,6 +46,8 @@ class client(object):
 					self.sock.send(mensaje.encode('utf8'))
 					data = self.sock.recv(1024)
 					print(str(data.decode('utf8')))
+				else:
+					print("Not connected")
 			elif cmd == "input v":
 				if probar == True:
 					while True:
@@ -59,6 +61,23 @@ class client(object):
 					self.sock.send(mensaje.encode('utf8'))
 					data = self.sock.recv(1024)
 					print(str(data.decode('utf8')))
+				else:
+					print("Not connected")
+			elif cmd == "get":
+				if probar == True:
+					while True:
+						try:
+							values = str(input("Ingrese clave para obtener valor\n"))
+							break
+						except:
+							print("incorrect key")
+							continue
+					mensaje ="get "+values
+					self.sock.send(mensaje.encode('utf8'))
+					data = self.sock.recv(1024)
+					print("("+values+","+str(data.decode('utf8'))+")")
+				else:
+					print("Not connected")
 	def intentar_conexion(self):#maneja la conexion si se ingresa comando connect
 		try:
 			self.sock.connect((self.host,self.port))
@@ -69,10 +88,11 @@ class client(object):
 
 if __name__ == "__main__":
 	while True:
-		port_num = input("port?")
+		port_num = input("port?\n>>\n")
 		try:
 			port_num = int(port_num)
 			break
 		except ValueError:
 			pass
-	client('',port_num).comandos()
+	host_ip = input("Host IP?\n>>\n")
+	client(host_ip,port_num).comandos()
