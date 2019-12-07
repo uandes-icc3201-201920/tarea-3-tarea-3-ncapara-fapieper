@@ -133,11 +133,11 @@ class client(object):
 
 if __name__ == "__main__":
 	while True:
-		port_num = input("port?\n>>\n")
+		port_num = input("port?\n>>")
 		try:
 			port_num = int(port_num)
 			break
 		except ValueError:
 			pass
-	host_ip = input("Host IP?\n>>\n")
+	host_ip = input("Host IP?\n>>")
 	client(host_ip,port_num).comandos()

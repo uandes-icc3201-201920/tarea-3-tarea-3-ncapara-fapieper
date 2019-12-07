@@ -77,7 +77,7 @@ class server(object):
 		self.rand_key += 1
 	def fetch_key_value(self,comando,client,address):#funcion para obtener el value
 		search_key = comando[1] in self.the_db
-		print(search_key)
+		#print(search_key)
 		if search_key == True:
 			get = self.the_db[comando[1]]
 			client.send(get)
@@ -107,8 +107,6 @@ class server(object):
 			info = "key not found, can't delete"
 			client.send(info.encode('utf-8'))
 	def key_info(self,comando,client,address):
-		info = list(self.the_db.keys())
-		print(info)
 		temporal = self.the_db
 		data = pickle.dumps(temporal)
 		client.send(data)
