@@ -1,5 +1,6 @@
 import socket
 import sys
+import pickle
 
 class client(object):
 	def __init__(self,host,port):
@@ -113,6 +114,15 @@ class client(object):
 					print(str(data.decode('utf8')))
 				else:
 					print("not connected")
+			elif cmd == "list":
+				if probar == True:
+					mensaje = "list key"
+					self.sock.send(mensaje.encode('utf-8'))
+					data = self.sock.recv(1024)
+					temp_a = pickle.loads(data)
+					print(temp_a)
+				else:
+					print("Not connected")
 	def intentar_conexion(self):#maneja la conexion si se ingresa comando connect
 		try:
 			self.sock.connect((self.host,self.port))

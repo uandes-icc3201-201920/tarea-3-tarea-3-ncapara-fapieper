@@ -1,6 +1,7 @@
 import socket
 import threading
 import random
+import pickle
 
 dbLOCK = threading.Lock()
 
@@ -43,7 +44,9 @@ class server(object):
 						self.try_diconnect(comando,client,address)
 					elif comando[0] == b'delete':
 						self.delete_key(comando,client,address)
-					print(self.the_db)
+					elif comando[0] == b'list':
+						self.key_info(comando,client,address)
+					#print(self.the_db)
 				else:
 					raise error('Client disconnected')
 			except:
@@ -103,6 +106,12 @@ class server(object):
 		else:
 			info = "key not found, can't delete"
 			client.send(info.encode('utf-8'))
+	def key_info(self,comando,client,address):
+		info = list(self.the_db.keys())
+		print(info)
+		temporal = self.the_db
+		data = pickle.dumps(temporal)
+		client.send(data)
 if __name__ == "__main__":
 	while True:
 		port_num = input("port?")
